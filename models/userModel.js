@@ -31,7 +31,7 @@ user.statics.comparePassword = async function (email, attemptedPassword) {
         return false;
     }
 
-    let result = bcrypt.compare (attemptedPassword, user.password);
+    let result = bcrypt.compare(attemptedPassword, user.password);
 
     return result;
 }

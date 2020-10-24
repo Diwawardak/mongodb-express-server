@@ -12,7 +12,7 @@ router.get('/users', async(req, res) => {
 
 
 router.post('/users/create', async(req, res) => {
-    const {name, email, age, phoneNumber} = req.body;
+    const {name,email,age,phoneNumber,password} = req.body;
 
     if (!name || !email || !age || !password) {
         res.send('Missing required information');
@@ -32,7 +32,7 @@ router.post('/users/create', async(req, res) => {
         email,
         phoneNumber,
         password: hashedpassword
-    });
+    })
     
     user.save();
     
@@ -62,11 +62,6 @@ router.post('/login', async(req, res) => {
 router.get('/protected-route', checkSignedIn, (req, res) => {
     res.send('welcome to the protected page');
 });
-
-
-// router.post('/profile', checkSignedIn, async (req, res) => {
-//     // renders profile page
-//  });
 
 
 module.exports = router;

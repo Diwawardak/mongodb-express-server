@@ -13,6 +13,8 @@ mongoose.connect('mongodb+srv://diwa:O4iQOjsXHU3gM8oK@cluster1.fn5su.mongodb.net
     useUnifiedTopology: true
 });
 
+mongoose.set('useCreateIndex', true);
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(session({
