@@ -3,12 +3,13 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const express = require('express');
+const dotenv = require('dotenv').config()
 
 const router = require('./routes/router');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://diwa:O4iQOjsXHU3gM8oK@cluster1.fn5su.mongodb.net/signup?retryWrites=true&w=majority', {
+mongoose.connect(`${process.env.MONGODB_URI}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });

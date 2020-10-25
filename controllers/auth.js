@@ -6,5 +6,6 @@ exports.checkSignedIn = (async(req, res, next) => {
         next();
         return;
     }
+    
     res.send('you must login to access this page');
 });

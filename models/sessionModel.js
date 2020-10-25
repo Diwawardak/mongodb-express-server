@@ -13,7 +13,6 @@ session.statics.checkSession = async function (userID) {
             return true;
         }
     }
-
     return exists;
 }
 
