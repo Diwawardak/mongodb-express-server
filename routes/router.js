@@ -4,64 +4,92 @@ const router = require('express').Router();
 const UserModel = require('../models/userModel');
 const {checkSignedIn} = require('../controllers/auth');
 
-router.get('/users', async(req, res) => {
-    const users = await UserModel.find({});
+router.get('/', (req, res) => {
+    res.render('index');
+});
 
+router.get('/users', async(req, res)=> {
+    const users = await UserModel.find({});
     res.send(users);
 });
 
+router.get('/signup', (req, res) => {
+    res.render('signup') 
+});
 
-router.post('/users/create', async(req, res) => {
-    const {name,email,age,phoneNumber,password} = req.body;
+router.post('/signup', async(req, res) => {
+    const {name, email, age, phoneNumber, password} = req.body;
 
     if (!name || !email || !age || !password) {
-        res.send('Missing required information');
+        res.render('signup', {err: 'Missing required information'});
         return;
     }
 
-    if (await UserModel.checkExists(email, phoneNumber)){
-        res.send('A user with the email or phone number already exists.');
+    if (await UserModel.checkExists(email, phoneNumber)) {
+        res.render('signup', {err: 'A user with this email or phone number already exists'});
         return;
     }
 
     let hashedpassword = await UserModel.hashPassword(password);
 
     const user = new UserModel({
-        name, 
+        name,
         age,
         email,
         phoneNumber,
         password: hashedpassword
-    })
-    
+    });
+
     user.save();
-    
-    res.send('User was created');
+
+    req.session.userID = nanoid();
+    req.session.save();
+
+    res.redirect('profile');
+});
+
+router.get('/login', (req, res) => {
+    res.render('login')
 });
 
 router.post('/login', async(req, res) => {
-    let {email, password} = req.body;
+    let {email, password, username} = req.body;
 
     if (!await UserModel.checkExists(email)) {
-        res.send('a user with this email doesn\'t exist');
-        return;
-    }  
-
-    if (await UserModel.comparePassword(email, password)) {
-        
-        req.session.userID = nanoid();
-        req.session.save();
-
-        res.send('you are now logged in');
+        res.render('login', {err: 'A user with this email doesn\'t exist'});
         return;
     }
 
-    res.send('You have entered the wrong password')
+    if (await UserModel.comparePassword(email, password)) {
+        console.log('login route triggered');
+
+        req.session.userID = nanoid();
+        req.session.save();
+
+        res.redirect('/profile');
+        return;
+    }
+
+    res.render('login', {err: 'You have entered the wrong password'});
 });
 
-router.get('/protected-route', checkSignedIn, (req, res) => {
-    res.send('welcome to the protected page');
+
+router.get('/profile', checkSignedIn, (req, res) => {
+    // console.log('profile route triggered');
+    res.render('profile')
+})
+
+router.get('/logout', (req, res) => {
+    req.session.destroy();
+
+    res.redirect('/');
 });
+
+/*
+Create route for admin page 
+think about method(s) - GET, POST etc
+think about protecting route
+*/
 
 
 module.exports = router;
